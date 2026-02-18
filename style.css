@@ -1,6 +1,7 @@
 html, body {
   margin: 0;
   padding: 0;
+  background: radial-gradient(circle at center, rgb(134, 134, 134) 0%, rgb(84, 84, 84) 50%, rgb(0, 0, 0) 100%);
 }
 
 .page-title {
@@ -15,6 +16,23 @@ html, body {
   letter-spacing: 0.03em;
   z-index: 10;
   pointer-events: none;
+}
+
+.bg-video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;   /* fills screen without distortion */
+  z-index: -1;         /* keeps video behind content */
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.page-content {
+  position: relative;
+  z-index: 1;
 }
 
 canvas {

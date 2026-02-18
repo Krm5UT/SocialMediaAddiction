@@ -29,7 +29,7 @@ async function setup() {
 }
 
 function draw() {
-  drawRadialGradientBackground(width / 2, height / 2);
+  clear();
   updateAndDrawRipples();
 
   if (circles.length > 0) {
