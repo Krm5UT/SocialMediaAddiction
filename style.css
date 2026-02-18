@@ -2,6 +2,21 @@ html, body {
   margin: 0;
   padding: 0;
 }
+
+.page-title {
+  position: fixed;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  letter-spacing: 0.03em;
+  z-index: 10;
+  pointer-events: none;
+}
+
 canvas {
   display: block;
   cursor: none;

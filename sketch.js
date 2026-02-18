@@ -130,10 +130,10 @@ function buildCategoryCircles() {
     countsByLevel.set(level, (countsByLevel.get(level) || 0) + 1);
   }
 
-  const categories = [
+  const categories = [  //catergories with their corresponding paths to the next pages
     { key: 'undergraduate', label: 'Undergraduate', targetPath: 'html/undergrad.html' },
     { key: 'graduate', label: 'Graduate', targetPath: 'html/graduate.html' },
-    { key: 'high school', label: 'High School', targetPath: null }
+    { key: 'high school', label: 'High School', targetPath: 'html/highschool.html' }
   ]
     .map((category) => ({
       ...category,
