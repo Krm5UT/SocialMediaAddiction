@@ -131,9 +131,9 @@ function buildCategoryCircles() {
   }
 
   const categories = [
-    { key: 'undergraduate', label: 'Undergraduate' },
-    { key: 'graduate', label: 'Graduate' },
-    { key: 'high school', label: 'High School' }
+    { key: 'undergraduate', label: 'Undergraduate', targetPath: 'html/undergrad.html' },
+    { key: 'graduate', label: 'Graduate', targetPath: 'html/graduate.html' },
+    { key: 'high school', label: 'High School', targetPath: null }
   ]
     .map((category) => ({
       ...category,
@@ -154,12 +154,25 @@ function buildCategoryCircles() {
 
     return {
       label: category.label,
+      targetPath: category.targetPath,
       diameter,
       position: createVector(spacing * (index + 1), y),
       velocity: p5.Vector.random2D().mult(random(0.9, 1.5)), //Starting Speed
       trail: []
     };
   });
+}
+
+function mousePressed() {
+  for (const categoryCircle of circles) {
+    const distanceToMouse = dist(mouseX, mouseY, categoryCircle.position.x, categoryCircle.position.y);
+    const isInsideCircle = distanceToMouse <= categoryCircle.diameter / 2;
+
+    if (isInsideCircle && categoryCircle.targetPath) {
+      window.location.href = categoryCircle.targetPath;
+      return;
+    }
+  }
 }
 
 function updateCircle(categoryCircle) {
