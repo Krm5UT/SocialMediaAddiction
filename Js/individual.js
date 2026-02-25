@@ -15,10 +15,47 @@ const performanceTextPool = {
 	]
 };
 
+let currentStudentUsageHours = '0';
+
 document.addEventListener('DOMContentLoaded', () => {
-	setupCustomCursor();
 	loadIndividualStudent();
+	startTimeLimitOverlay();
 });
+
+function startTimeLimitOverlay() {
+	const overlay = document.getElementById('time-limit-overlay');
+	setTimeLimitMessage(currentStudentUsageHours);
+	setIgnoreLimitTarget();
+
+	if (!overlay) {
+		return;
+	}
+
+	window.setTimeout(() => {
+		overlay.classList.add('is-visible');
+		overlay.setAttribute('aria-hidden', 'false');
+	}, 10000);
+}
+
+function setTimeLimitMessage(usageHours) {
+	const messageElement = document.getElementById('time-limit-message');
+
+	if (!messageElement) {
+		return;
+	}
+
+	messageElement.textContent = `You’ve reached your limit of ${usageHours} hours on phone.`;
+}
+
+function setIgnoreLimitTarget() {
+	const ignoreLink = document.getElementById('time-limit-ignore');
+
+	if (!ignoreLink) {
+		return;
+	}
+
+	ignoreLink.href = `${window.location.pathname}${window.location.search}`;
+}
 
 async function loadIndividualStudent() {
 	const card = document.getElementById('individual-card');
@@ -60,6 +97,8 @@ async function loadIndividualStudent() {
 		const glowOpacity = 0.38 + mentalHealthScore * 0.06;
 		const glowRgb = student.Gender.toLowerCase() === 'female' ? '216, 90, 208' : '41, 132, 255';
 		const iconPath = student.Gender.toLowerCase() === 'female' ? '../images/female.png' : '../images/male.png';
+		currentStudentUsageHours = student.Avg_Daily_Usage_Hours || '0';
+		setTimeLimitMessage(currentStudentUsageHours);
 
 		card.style.setProperty('--glow-size', `${glowSize}px`);
 		card.style.setProperty('--pulse-scale', pulseScale.toFixed(3));

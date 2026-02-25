@@ -22,7 +22,6 @@ let isPhoneScreenOn = false;
 const floatingPromptText = 'click screen to turn on';
 let floatingPromptPosition;
 let floatingPromptVelocity;
-let customCursorElement;
 
 function loadImageAsync(path) {
   return new Promise((resolve) => {
@@ -47,6 +46,8 @@ function loadTableAsync(path) {
 }
 
 async function setup() {
+  noCursor();
+
   createCanvas(windowWidth, windowHeight);
 
   phoneOutlineImage = await loadImageAsync('images/phoneoutline.png');
@@ -58,7 +59,6 @@ async function setup() {
     Academic_Level = [];
   }
 
-  setupCustomCursor();
   initializeFloatingPrompt();
   buildCategoryCircles();
 }
@@ -94,6 +94,7 @@ function draw() {
   drawPhoneBlackOverlay();
   drawPhoneOutline();
 
+  drawEmberCursor();
 }
 
 function windowResized() {  //makes sure its responsive to window resizing
@@ -525,24 +526,4 @@ function drawEmberCursor() {
 
   ctx.restore();
   pop();
-}
-
-function setupCustomCursor() {
-  customCursorElement = document.createElement('div');
-  customCursorElement.className = 'custom-cursor';
-  customCursorElement.innerHTML = '<div class="custom-cursor-outer"></div><div class="custom-cursor-inner"></div>';
-  document.body.appendChild(customCursorElement);
-
-  const updateCursorPosition = (event) => {
-    customCursorElement.style.left = `${event.clientX}px`;
-    customCursorElement.style.top = `${event.clientY}px`;
-    customCursorElement.style.opacity = '1';
-  };
-
-  window.addEventListener('mousemove', updateCursorPosition);
-  window.addEventListener('mousedown', () => customCursorElement.classList.add('is-down'));
-  window.addEventListener('mouseup', () => customCursorElement.classList.remove('is-down'));
-  window.addEventListener('mouseleave', () => {
-    customCursorElement.style.opacity = '0';
-  });
 }
