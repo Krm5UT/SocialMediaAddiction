@@ -2,6 +2,11 @@ html, body {
   margin: 0;
   padding: 0;
   background: radial-gradient(circle at center, rgb(134, 134, 134) 0%, rgb(84, 84, 84) 50%, rgb(0, 0, 0) 100%);
+  cursor: none;
+}
+
+a, button, canvas {
+  cursor: none;
 }
 
 .page-title {
@@ -37,5 +42,46 @@ html, body {
 
 canvas {
   display: block;
-  cursor: none;
+}
+
+.custom-cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+  z-index: 99999;
+  opacity: 0;
+}
+
+.custom-cursor-outer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 26px;
+  height: 26px;
+  margin-left: -13px;
+  margin-top: -13px;
+  border-radius: 50%;
+  background: rgba(50, 50, 50, 0.16);
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.55);
+  transition: transform 120ms ease;
+}
+
+.custom-cursor-inner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.65);
+}
+
+.custom-cursor.is-down .custom-cursor-outer {
+  transform: scale(0.9);
 }
