@@ -83,11 +83,20 @@ function renderIconWall(container, selectedStudents, featuredList, academicLevel
 	container.innerHTML = '';
 
 	randomizedStudents.forEach((student) => {
-		const iconPath = student.Gender.toLowerCase() === 'female' ? '../images/female.png' : '../images/male.png';
+		const iconPath = getStudentIconPath(student);
+		const fallbackIconPath = getGenderFallbackIconPath(student.Gender);
 		const icon = document.createElement('img');
 		icon.src = iconPath;
-		icon.alt = `${student.Gender} icon`;
+		icon.alt = `${student.Most_Used_Platform} ${student.Gender} icon`;
 		icon.className = 'wall-person';
+		icon.onerror = () => {
+			if (icon.dataset.fallbackApplied === 'true') {
+				return;
+			}
+
+			icon.dataset.fallbackApplied = 'true';
+			icon.src = fallbackIconPath;
+		};
 
 		if (highlightIdSet.has(student.Student_ID)) {
 			icon.classList.add('is-highlight');
@@ -102,6 +111,25 @@ function renderIconWall(container, selectedStudents, featuredList, academicLevel
 
 		container.appendChild(icon);
 	});
+}
+
+function getStudentIconPath(student) {
+	const genderSuffix = (student.Gender || '').toLowerCase() === 'female' ? 'Female' : 'Male';
+	const platformRaw = (student.Most_Used_Platform || '').trim();
+	const platformFileMap = {
+		YouTube: 'Youtube'
+	};
+	const platformBase = (platformFileMap[platformRaw] || platformRaw).replace(/\s+/g, '');
+
+	if (!platformBase) {
+		return getGenderFallbackIconPath(student.Gender);
+	}
+
+	return `../images/${platformBase}${genderSuffix}.png`;
+}
+
+function getGenderFallbackIconPath(gender) {
+	return (gender || '').toLowerCase() === 'female' ? '../images/female.png' : '../images/male.png';
 }
 
 function shuffleStudents(students) {

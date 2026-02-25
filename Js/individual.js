@@ -96,7 +96,8 @@ async function loadIndividualStudent() {
 		const jitterAmount = 0.6 + mentalHealthScore * 0.26;
 		const glowOpacity = 0.38 + mentalHealthScore * 0.06;
 		const glowRgb = student.Gender.toLowerCase() === 'female' ? '216, 90, 208' : '41, 132, 255';
-		const iconPath = student.Gender.toLowerCase() === 'female' ? '../images/female.png' : '../images/male.png';
+		const iconPath = getStudentIconPath(student);
+		const fallbackIconPath = getGenderFallbackIconPath(student.Gender);
 		currentStudentUsageHours = student.Avg_Daily_Usage_Hours || '0';
 		setTimeLimitMessage(currentStudentUsageHours);
 
@@ -110,7 +111,7 @@ async function loadIndividualStudent() {
 			<div class="focus-jitter">
 				<div class="focus-core">
 					<div class="focus-glow" aria-hidden="true"></div>
-					<img class="focus-student" src="${iconPath}" alt="${student.Gender} student icon">
+					<img class="focus-student" src="${iconPath}" alt="${student.Most_Used_Platform} ${student.Gender} student icon">
 				</div>
 			</div>
 			<div class="student-meta">
@@ -119,9 +120,40 @@ async function loadIndividualStudent() {
 				<p class="thought-text">"${thoughtText}"</p>
 			</div>
 		`;
+
+		const focusImage = card.querySelector('.focus-student');
+		if (focusImage) {
+			focusImage.onerror = () => {
+				if (focusImage.dataset.fallbackApplied === 'true') {
+					return;
+				}
+
+				focusImage.dataset.fallbackApplied = 'true';
+				focusImage.src = fallbackIconPath;
+			};
+		}
 	} catch (error) {
 		card.innerHTML = '<p>Unable to load student data.</p>';
 	}
+}
+
+function getStudentIconPath(student) {
+	const genderSuffix = (student.Gender || '').toLowerCase() === 'female' ? 'Female' : 'Male';
+	const platformRaw = (student.Most_Used_Platform || '').trim();
+	const platformFileMap = {
+		YouTube: 'Youtube'
+	};
+	const platformBase = (platformFileMap[platformRaw] || platformRaw).replace(/\s+/g, '');
+
+	if (!platformBase) {
+		return getGenderFallbackIconPath(student.Gender);
+	}
+
+	return `../images/${platformBase}${genderSuffix}.png`;
+}
+
+function getGenderFallbackIconPath(gender) {
+	return (gender || '').toLowerCase() === 'female' ? '../images/female.png' : '../images/male.png';
 }
 
 function getRandomPerformanceText(performanceValue) {
