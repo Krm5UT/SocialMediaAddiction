@@ -1,5 +1,20 @@
 document.title = 'Individual Student';
 
+const performanceTextPool = {
+	yes: [
+		'Just a few more minutes on my phone.',
+		'I can scroll now and study later... probably.',
+		'One more video will not hurt my grades, right?',
+		'I keep telling myself I will start homework after this.'
+	],
+	no: [
+		'I should get back to studying.',
+		'Time to close this and finish my assignments.',
+		'I can check my phone later after I complete my work.',
+		'Let me focus first, then I can scroll.'
+	]
+};
+
 document.addEventListener('DOMContentLoaded', () => {
 	setupCustomCursor();
 	loadIndividualStudent();
@@ -36,21 +51,48 @@ async function loadIndividualStudent() {
 			return;
 		}
 
+		const mentalHealthScore = clampValue(Number(student.Mental_Health_Score) || 5, 1, 10);
+		const affectsPerformance = (student.Affects_Academic_Performance || '').trim().toLowerCase();
+		const thoughtText = getRandomPerformanceText(affectsPerformance);
+		const glowSize = 300 + mentalHealthScore * 62;
+		const pulseScale = 0.1 + mentalHealthScore * 0.02;
+		const jitterAmount = 0.6 + mentalHealthScore * 0.26;
+		const glowOpacity = 0.38 + mentalHealthScore * 0.06;
+		const glowRgb = student.Gender.toLowerCase() === 'female' ? '216, 90, 208' : '41, 132, 255';
 		const iconPath = student.Gender.toLowerCase() === 'female' ? '../images/female.png' : '../images/male.png';
+
+		card.style.setProperty('--glow-size', `${glowSize}px`);
+		card.style.setProperty('--pulse-scale', pulseScale.toFixed(3));
+		card.style.setProperty('--jitter', `${jitterAmount.toFixed(2)}px`);
+		card.style.setProperty('--glow-opacity', glowOpacity.toFixed(2));
+		card.style.setProperty('--glow-rgb', glowRgb);
+
 		card.innerHTML = `
-			<img src="${iconPath}" alt="${student.Gender} student icon">
-			<h1>ID ${student.Student_ID}</h1>
-			<p>Academic Level: ${student.Academic_Level}</p>
-			<p>Gender: ${student.Gender}</p>
-			<p>Usage: ${student.Avg_Daily_Usage_Hours}h/day</p>
-			<p>Sleep: ${student.Sleep_Hours_Per_Night}h</p>
-			<p>Addicted Score: ${student.Addicted_Score}</p>
-			<p>Conflicts: ${student.Conflicts_Over_Social_Media}</p>
-			<p>Academics Affected: ${student.Affects_Academic_Performance}</p>
+			<div class="focus-jitter">
+				<div class="focus-core">
+					<div class="focus-glow" aria-hidden="true"></div>
+					<img class="focus-student" src="${iconPath}" alt="${student.Gender} student icon">
+				</div>
+			</div>
+			<div class="student-meta">
+				<h1>ID ${student.Student_ID}</h1>
+				<p>Mental Health Score: ${student.Mental_Health_Score}</p>
+				<p class="thought-text">"${thoughtText}"</p>
+			</div>
 		`;
 	} catch (error) {
 		card.innerHTML = '<p>Unable to load student data.</p>';
 	}
+}
+
+function getRandomPerformanceText(performanceValue) {
+	const pool = performanceValue === 'yes' ? performanceTextPool.yes : performanceTextPool.no;
+	const randomIndex = Math.floor(Math.random() * pool.length);
+	return pool[randomIndex];
+}
+
+function clampValue(value, minimum, maximum) {
+	return Math.min(maximum, Math.max(minimum, value));
 }
 
 function getBackHref(level) {
