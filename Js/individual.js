@@ -141,9 +141,11 @@ function getStudentIconPath(student) {
 	const genderSuffix = (student.Gender || '').toLowerCase() === 'female' ? 'Female' : 'Male';
 	const platformRaw = (student.Most_Used_Platform || '').trim();
 	const platformFileMap = {
-		YouTube: 'Youtube'
+		youtube: 'Youtube',
+		line: 'Line'
 	};
-	const platformBase = (platformFileMap[platformRaw] || platformRaw).replace(/\s+/g, '');
+	const normalizedPlatform = platformRaw.toLowerCase();
+	const platformBase = (platformFileMap[normalizedPlatform] || platformRaw).replace(/\s+/g, '');
 
 	if (!platformBase) {
 		return getGenderFallbackIconPath(student.Gender);
