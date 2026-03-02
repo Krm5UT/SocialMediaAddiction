@@ -1,5 +1,118 @@
 document.title = 'Individual Student';
 
+const countryCodeMap = {
+	Afghanistan: 'AF',
+	Albania: 'AL',
+	Andorra: 'AD',
+	Argentina: 'AR',
+	Armenia: 'AM',
+	Australia: 'AU',
+	Austria: 'AT',
+	Azerbaijan: 'AZ',
+	Bahamas: 'BS',
+	Bahrain: 'BH',
+	Bangladesh: 'BD',
+	Belarus: 'BY',
+	Belgium: 'BE',
+	Bhutan: 'BT',
+	Bolivia: 'BO',
+	Bosnia: 'BA',
+	Brazil: 'BR',
+	Bulgaria: 'BG',
+	Canada: 'CA',
+	Chile: 'CL',
+	China: 'CN',
+	Colombia: 'CO',
+	'Costa Rica': 'CR',
+	Croatia: 'HR',
+	Cyprus: 'CY',
+	'Czech Republic': 'CZ',
+	Denmark: 'DK',
+	Ecuador: 'EC',
+	Egypt: 'EG',
+	Estonia: 'EE',
+	Finland: 'FI',
+	France: 'FR',
+	Georgia: 'GE',
+	Germany: 'DE',
+	Ghana: 'GH',
+	Greece: 'GR',
+	'Hong Kong': 'HK',
+	Hungary: 'HU',
+	Iceland: 'IS',
+	India: 'IN',
+	Indonesia: 'ID',
+	Iraq: 'IQ',
+	Ireland: 'IE',
+	Israel: 'IL',
+	Italy: 'IT',
+	Jamaica: 'JM',
+	Japan: 'JP',
+	Jordan: 'JO',
+	Kazakhstan: 'KZ',
+	Kenya: 'KE',
+	Kosovo: 'XK',
+	Kuwait: 'KW',
+	Kyrgyzstan: 'KG',
+	Latvia: 'LV',
+	Lebanon: 'LB',
+	Liechtenstein: 'LI',
+	Lithuania: 'LT',
+	Luxembourg: 'LU',
+	Malaysia: 'MY',
+	Maldives: 'MV',
+	Malta: 'MT',
+	Mexico: 'MX',
+	Moldova: 'MD',
+	Monaco: 'MC',
+	Montenegro: 'ME',
+	Morocco: 'MA',
+	Nepal: 'NP',
+	Netherlands: 'NL',
+	'New Zealand': 'NZ',
+	Nigeria: 'NG',
+	'North Macedonia': 'MK',
+	Norway: 'NO',
+	Oman: 'OM',
+	Pakistan: 'PK',
+	Panama: 'PA',
+	Paraguay: 'PY',
+	Peru: 'PE',
+	Philippines: 'PH',
+	Poland: 'PL',
+	Portugal: 'PT',
+	Qatar: 'QA',
+	Romania: 'RO',
+	Russia: 'RU',
+	'San Marino': 'SM',
+	Serbia: 'RS',
+	Singapore: 'SG',
+	Slovakia: 'SK',
+	Slovenia: 'SI',
+	'South Africa': 'ZA',
+	'South Korea': 'KR',
+	Spain: 'ES',
+	'Sri Lanka': 'LK',
+	Sweden: 'SE',
+	Switzerland: 'CH',
+	Syria: 'SY',
+	Taiwan: 'TW',
+	Tajikistan: 'TJ',
+	Thailand: 'TH',
+	Trinidad: 'TT',
+	Turkey: 'TR',
+	UAE: 'AE',
+	UK: 'GB',
+	Ukraine: 'UA',
+	Uruguay: 'UY',
+	USA: 'US',
+	Uzbekistan: 'UZ',
+	'Vatican City': 'VA',
+	Venezuela: 'VE',
+	Vietnam: 'VN',
+	Yemen: 'YE'
+};
+
 const performanceTextPool = {
 	yes: [
 		'Just a few more minutes on my phone.',
@@ -89,35 +202,49 @@ async function loadIndividualStudent() {
 		}
 
 		const mentalHealthScore = clampValue(Number(student.Mental_Health_Score) || 5, 1, 10);
+		const motionProfile = getMentalHealthMotionProfile(mentalHealthScore);
 		const affectsPerformance = (student.Affects_Academic_Performance || '').trim().toLowerCase();
 		const thoughtText = getRandomPerformanceText(affectsPerformance);
 		const glowSize = 300 + mentalHealthScore * 62;
-		const pulseScale = 0.1 + mentalHealthScore * 0.02;
-		const jitterAmount = 0.6 + mentalHealthScore * 0.26;
+		const pulseScale = motionProfile.pulseScale;
+		const jitterAmount = motionProfile.jitterAmount;
 		const glowOpacity = 0.38 + mentalHealthScore * 0.06;
 		const glowRgb = student.Gender.toLowerCase() === 'female' ? '216, 90, 208' : '41, 132, 255';
 		const iconPath = getStudentIconPath(student);
 		const fallbackIconPath = getGenderFallbackIconPath(student.Gender);
+		const nationalityFlag = getCountryFlagEmoji(student.Country);
+		const conflictCount = student.Conflicts_Over_Social_Media || '0';
+		const addictedScore = student.Addicted_Score || '0';
+		const sleepHours = student.Sleep_Hours_Per_Night || '0';
 		currentStudentUsageHours = student.Avg_Daily_Usage_Hours || '0';
 		setTimeLimitMessage(currentStudentUsageHours);
 
 		card.style.setProperty('--glow-size', `${glowSize}px`);
 		card.style.setProperty('--pulse-scale', pulseScale.toFixed(3));
 		card.style.setProperty('--jitter', `${jitterAmount.toFixed(2)}px`);
+		card.style.setProperty('--jitter-duration', motionProfile.jitterDuration);
+		card.style.setProperty('--icon-glitch-duration', motionProfile.iconGlitchDuration);
+		card.style.setProperty('--text-glitch-duration', motionProfile.textGlitchDuration);
 		card.style.setProperty('--glow-opacity', glowOpacity.toFixed(2));
 		card.style.setProperty('--glow-rgb', glowRgb);
 
 		card.innerHTML = `
-			<div class="focus-jitter">
-				<div class="focus-core">
-					<div class="focus-glow" aria-hidden="true"></div>
-					<img class="focus-student" src="${iconPath}" alt="${student.Most_Used_Platform} ${student.Gender} student icon">
+			<div class="student-flag" aria-label="Nationality ${student.Country}" title="${student.Country}">${nationalityFlag}</div>
+			<div class="phone-shell" aria-hidden="true">
+				<img class="phone-frame" src="../images/phoneoutline.png" alt="">
+				<div class="outside-notifications">
+					<div class="message-notification message-notification-1">"${thoughtText}"</div>
+					<div class="message-notification message-notification-2">Conflicts: ${conflictCount} · Addicted Score: ${addictedScore}</div>
+					<div class="message-notification message-notification-3">Sleep: ${sleepHours} hrs/night</div>
 				</div>
-			</div>
-			<div class="student-meta">
-				<h1>ID ${student.Student_ID}</h1>
-				<p>Mental Health Score: ${student.Mental_Health_Score}</p>
-				<p class="thought-text">"${thoughtText}"</p>
+				<div class="phone-screen">
+					<div class="focus-jitter">
+						<div class="focus-core">
+							<div class="focus-glow" aria-hidden="true"></div>
+							<img class="focus-student" src="${iconPath}" alt="${student.Most_Used_Platform} ${student.Gender} student icon">
+						</div>
+					</div>
+				</div>
 			</div>
 		`;
 
@@ -166,6 +293,54 @@ function getRandomPerformanceText(performanceValue) {
 
 function clampValue(value, minimum, maximum) {
 	return Math.min(maximum, Math.max(minimum, value));
+}
+
+function getMentalHealthMotionProfile(score) {
+	if (score <= 3) {
+		return {
+			jitterAmount: 4.4,
+			jitterDuration: '85ms',
+			iconGlitchDuration: '0.95s',
+			textGlitchDuration: '0.78s',
+			pulseScale: 0.3
+		};
+	}
+
+	if (score <= 6) {
+		return {
+			jitterAmount: 2.9,
+			jitterDuration: '120ms',
+			iconGlitchDuration: '1.3s',
+			textGlitchDuration: '1.05s',
+			pulseScale: 0.24
+		};
+	}
+
+	return {
+		jitterAmount: 0.8,
+		jitterDuration: '220ms',
+		iconGlitchDuration: '2.2s',
+		textGlitchDuration: '1.9s',
+		pulseScale: 0.12
+	};
+}
+
+function getCountryFlagEmoji(countryName) {
+	const isoCode = countryCodeMap[(countryName || '').trim()];
+
+	if (!isoCode) {
+		return '🏳️';
+	}
+
+	const normalizedCode = isoCode.toUpperCase();
+
+	if (normalizedCode === 'XK') {
+		return '🇽🇰';
+	}
+
+	return normalizedCode.replace(/[A-Z]/g, (character) =>
+		String.fromCodePoint(127397 + character.charCodeAt(0))
+	);
 }
 
 function getBackHref(level) {

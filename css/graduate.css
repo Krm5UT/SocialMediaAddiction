@@ -50,6 +50,40 @@ body {
 	opacity: 0.85;
 }
 
+.gender-legend {
+	display: flex;
+	justify-content: center;
+	gap: 1.2rem;
+	flex-wrap: wrap;
+	font-size: 0.95rem;
+	opacity: 0.95;
+}
+
+.legend-item {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.45rem;
+	padding: 0.3rem 0.65rem;
+	border-radius: 999px;
+	background: rgba(0, 0, 0, 0.28);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.legend-dot {
+	width: 0.8rem;
+	height: 0.8rem;
+	border-radius: 50%;
+	display: inline-block;
+}
+
+.legend-dot-female {
+	background: #d85ad0;
+}
+
+.legend-dot-male {
+	background: #2984ff;
+}
+
 .visual-board {
 	border-radius: 16px;
 	overflow: hidden;
