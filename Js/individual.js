@@ -212,8 +212,9 @@ async function loadIndividualStudent() {
 		const glowRgb = student.Gender.toLowerCase() === 'female' ? '216, 90, 208' : '41, 132, 255';
 		const iconPath = getStudentIconPath(student);
 		const fallbackIconPath = getGenderFallbackIconPath(student.Gender);
-		const nationalityFlag = getCountryFlagEmoji(student.Country);
-		const conflictCount = student.Conflicts_Over_Social_Media || '0';
+		const countryCode = getCountryCode(student.Country);
+		const nationalityFlagUrl = countryCode ? `https://flagcdn.com/w80/${countryCode.toLowerCase()}.png` : '';
+		const age = student.Age || 'N/A';
 		const addictedScore = student.Addicted_Score || '0';
 		const sleepHours = student.Sleep_Hours_Per_Night || '0';
 		currentStudentUsageHours = student.Avg_Daily_Usage_Hours || '0';
@@ -229,13 +230,20 @@ async function loadIndividualStudent() {
 		card.style.setProperty('--glow-rgb', glowRgb);
 
 		card.innerHTML = `
-			<div class="student-flag" aria-label="Nationality ${student.Country}" title="${student.Country}">${nationalityFlag}</div>
+			<div class="student-flag" aria-label="Nationality ${student.Country}" title="${student.Country}">
+				${
+					nationalityFlagUrl
+						? `<img class="student-flag-image" src="${nationalityFlagUrl}" alt="${student.Country} flag" loading="lazy">`
+						: '<span class="student-flag-fallback">🏳️</span>'
+				}
+			</div>
 			<div class="phone-shell" aria-hidden="true">
 				<img class="phone-frame" src="../images/phoneoutline.png" alt="">
 				<div class="outside-notifications">
 					<div class="message-notification message-notification-1">"${thoughtText}"</div>
-					<div class="message-notification message-notification-2">Conflicts: ${conflictCount} · Addicted Score: ${addictedScore}</div>
+					<div class="message-notification message-notification-2">Addicted Score: ${addictedScore}</div>
 					<div class="message-notification message-notification-3">Sleep: ${sleepHours} hrs/night</div>
+					<div class="message-notification message-notification-4">Age: ${age}</div>
 				</div>
 				<div class="phone-screen">
 					<div class="focus-jitter">
@@ -257,6 +265,18 @@ async function loadIndividualStudent() {
 
 				focusImage.dataset.fallbackApplied = 'true';
 				focusImage.src = fallbackIconPath;
+			};
+		}
+
+		const flagImage = card.querySelector('.student-flag-image');
+		if (flagImage) {
+			flagImage.onerror = () => {
+				const flagContainer = card.querySelector('.student-flag');
+				if (!flagContainer) {
+					return;
+				}
+
+				flagContainer.innerHTML = '<span class="student-flag-fallback">🏳️</span>';
 			};
 		}
 	} catch (error) {
@@ -325,22 +345,14 @@ function getMentalHealthMotionProfile(score) {
 	};
 }
 
-function getCountryFlagEmoji(countryName) {
+function getCountryCode(countryName) {
 	const isoCode = countryCodeMap[(countryName || '').trim()];
 
 	if (!isoCode) {
-		return '🏳️';
+		return '';
 	}
 
-	const normalizedCode = isoCode.toUpperCase();
-
-	if (normalizedCode === 'XK') {
-		return '🇽🇰';
-	}
-
-	return normalizedCode.replace(/[A-Z]/g, (character) =>
-		String.fromCodePoint(127397 + character.charCodeAt(0))
-	);
+	return isoCode.toUpperCase();
 }
 
 function getBackHref(level) {

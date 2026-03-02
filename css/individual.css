@@ -58,11 +58,27 @@ body {
 	position: absolute;
 	top: 1rem;
 	right: 1rem;
-	font-size: clamp(2rem, 4vw, 2.9rem);
-	line-height: 1;
+	width: clamp(2.3rem, 4.2vw, 3rem);
+	height: clamp(1.6rem, 3vw, 2.2rem);
 	text-shadow: 0 3px 14px rgba(0, 0, 0, 0.8);
 	user-select: none;
 	pointer-events: none;
+}
+
+.student-flag-image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+	border-radius: 0.22rem;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
+	border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.student-flag-fallback {
+	font-size: clamp(1.6rem, 3.8vw, 2.4rem);
+	line-height: 1;
+	display: inline-block;
 }
 
 .phone-shell {
@@ -122,6 +138,11 @@ body {
 .message-notification-3 {
 	bottom: 16%;
 	left: -38%;
+}
+
+.message-notification-4 {
+	bottom: 28%;
+	right: -42%;
 }
 
 .phone-screen {
@@ -373,6 +394,10 @@ body {
 
 	.message-notification-3 {
 		left: -24%;
+	}
+
+	.message-notification-4 {
+		right: -26%;
 	}
 }
 
