@@ -225,7 +225,6 @@ async function loadIndividualStudent() {
 		card.style.setProperty('--jitter', `${jitterAmount.toFixed(2)}px`);
 		card.style.setProperty('--jitter-duration', motionProfile.jitterDuration);
 		card.style.setProperty('--icon-glitch-duration', motionProfile.iconGlitchDuration);
-		card.style.setProperty('--text-glitch-duration', motionProfile.textGlitchDuration);
 		card.style.setProperty('--glow-opacity', glowOpacity.toFixed(2));
 		card.style.setProperty('--glow-rgb', glowRgb);
 
@@ -321,7 +320,6 @@ function getMentalHealthMotionProfile(score) {
 			jitterAmount: 4.4,
 			jitterDuration: '85ms',
 			iconGlitchDuration: '0.95s',
-			textGlitchDuration: '0.78s',
 			pulseScale: 0.3
 		};
 	}
@@ -331,7 +329,6 @@ function getMentalHealthMotionProfile(score) {
 			jitterAmount: 2.9,
 			jitterDuration: '120ms',
 			iconGlitchDuration: '1.3s',
-			textGlitchDuration: '1.05s',
 			pulseScale: 0.24
 		};
 	}
@@ -340,7 +337,6 @@ function getMentalHealthMotionProfile(score) {
 		jitterAmount: 0.8,
 		jitterDuration: '220ms',
 		iconGlitchDuration: '2.2s',
-		textGlitchDuration: '1.9s',
 		pulseScale: 0.12
 	};
 }
